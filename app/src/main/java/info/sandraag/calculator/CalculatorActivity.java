@@ -8,13 +8,12 @@ import android.widget.TextView;
 
 public class CalculatorActivity extends AppCompatActivity {
 
-    private String num = ""; // "model" number
-    private TextView num_view; // contains a copy of 'num'
+    private String curr_num = ""; // "Model" number (to store the input number)
+    private String prev_num = ""; // "Model" previous number (to remember the last input number)
+    private TextView num_view = null; // Contains a copy of curr_num or prev_num
 
-    private String result = ""; // "model" last number
-
-    private int operation_id = 0; // operation selected id
-    private boolean operator_clicked = false;
+    private Button operator = null; // Reference to the last operator selected
+    private boolean is_equals = false; // To check if the equals button has been clicked
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,86 +22,137 @@ public class CalculatorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_calculator);
 
         num_view = findViewById(R.id.curr_num);
-        num_view.setText(num);
+
+        num_view.setText(curr_num);
     }
 
     public void onClickDigit(View view) {
 
         Button b = (Button)view;
 
-        num += b.getText().toString().charAt(0);
-        num_view.setText(num);
+        // Reset the current number if the equals button has been clicked
+        if (is_equals) {
+
+            curr_num = "";
+            is_equals = false;
+        }
+
+        curr_num += b.getText().toString().charAt(0);
+
+        num_view.setText(curr_num);
     }
 
     public void onClickDot(View view) {
 
-        //if (num_view.getText() != "") {
-            //if (num_view.getText().charAt(num_view.length() - 1) != '.') {
-                Button b = (Button) view;
-                num += b.getText().toString().charAt(0);
-                num_view.setText(num);
-            //}
-        //}
+        // Reset the current number if the equals button has been clicked
+        if (is_equals) {
+
+            curr_num = "";
+            is_equals = false;
+        }
+
+        if (!curr_num.contains(".")) {
+
+            Button b = (Button) view;
+
+            curr_num += b.getText().toString().charAt(0);
+
+            num_view.setText(curr_num);
+        }
     }
 
     public void onClickOperator(View view) {
 
-        Button b = (Button)view;
+        Button new_operator = (Button)view;
 
-        if (operator_clicked) {
-            num = Operate(operation_id);
+        if (!curr_num.equals("")) {
 
-            // Update text view
-            num_view.setText(num);
+            if (operator != null) {
+
+                // Overwrite previous number with result
+                prev_num = Operate(operator.getId());
+
+                // Display the result
+                num_view.setText(prev_num);
+            } else {
+
+                // Overwrite previous number with current number
+                prev_num = curr_num;
+            }
         }
-        else {
-            // Clean text view
-            num_view.setText("");
 
-            operator_clicked = true;
-            operation_id = b.getId();
+        curr_num = "";
+        is_equals = false;
 
-            result = num;
-            num = "";
-        }
+        // Save new operator
+        operator = new_operator;
     }
 
     public void onClickEquals(View view) {
 
-        Button b = (Button) view;
-        num = Operate(operation_id);
+        if (operator != null) {
 
-        // Update text view
-        num_view.setText(num);
+            if (curr_num.equals(""))
+                // Overwrite current number with previous number
+                curr_num = prev_num;
 
-        operator_clicked = false;
+            // Overwrite both current and previous numbers with result
+            curr_num = prev_num = Operate(operator.getId());
+
+            // Display the result
+            num_view.setText(prev_num);
+        }
+
+        is_equals = true;
+
+        operator = null;
     }
 
-    private String Operate(int operation_id)
-    {
-        double num_value = Double.parseDouble(num);
-        double result_value = Double.parseDouble(result);
+    public void onClickClear(View view) {
+
+        prev_num = curr_num = "";
+
+        num_view.setText(curr_num);
+
+        is_equals = false;
+
+        operator = null;
+    }
+
+    private String Operate(int operation_id) {
+
+        double curr_num_value = Double.parseDouble(curr_num);
+        double prev_num_value = Double.parseDouble(prev_num);
+        double result_value = 0;
 
         switch (operation_id)
         {
             case R.id.btn_plus:
-                result_value += num_value;
+                result_value = prev_num_value + curr_num_value;
                 break;
 
             case R.id.btn_minus:
-                result_value -= num_value;
+                result_value = prev_num_value - curr_num_value;
                 break;
 
             case R.id.btn_multiplication:
-                result_value *= num_value;
+                result_value = prev_num_value * curr_num_value;
                 break;
 
             case R.id.btn_division:
-                result_value /= num_value;
+                result_value = prev_num_value / curr_num_value;
+                break;
+
+            default:
                 break;
         }
 
-        result = Double.toString(result_value);
-        return result;
+        if (result_value % 1 == 0) { // All integers are modulo of 1
+
+            int simplified_result_value = (int)result_value;
+            return Integer.toString(simplified_result_value);
+        }
+
+        return Double.toString(result_value);
     }
 }
