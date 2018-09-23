@@ -65,6 +65,9 @@ public class CalculatorActivity extends AppCompatActivity {
 
         Button new_operator = (Button)view;
 
+        if (curr_num.equals("."))
+            return;
+
         if (!curr_num.equals("")) {
 
             if (operator != null) {
@@ -89,6 +92,9 @@ public class CalculatorActivity extends AppCompatActivity {
     }
 
     public void onClickEquals(View view) {
+
+        if (curr_num.equals("."))
+            return;
 
         if (operator != null) {
 
