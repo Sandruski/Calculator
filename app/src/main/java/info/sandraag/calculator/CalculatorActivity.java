@@ -34,6 +34,7 @@ public class CalculatorActivity extends AppCompatActivity {
         if (is_equals) {
 
             curr_num = "";
+            operator = null;
             is_equals = false;
         }
 
@@ -48,6 +49,7 @@ public class CalculatorActivity extends AppCompatActivity {
         if (is_equals) {
 
             curr_num = "";
+            operator = null;
             is_equals = false;
         }
 
@@ -68,7 +70,7 @@ public class CalculatorActivity extends AppCompatActivity {
         if (curr_num.equals("."))
             return;
 
-        if (!curr_num.equals("")) {
+        if (!curr_num.equals("") && !is_equals) {
 
             if (operator != null) {
 
@@ -110,8 +112,6 @@ public class CalculatorActivity extends AppCompatActivity {
         }
 
         is_equals = true;
-
-        operator = null;
     }
 
     public void onClickClear(View view) {
@@ -126,6 +126,9 @@ public class CalculatorActivity extends AppCompatActivity {
     }
 
     private String Operate(int operation_id) {
+
+        if (curr_num.equals("") || prev_num.equals(""))
+            return "";
 
         double curr_num_value = Double.parseDouble(curr_num);
         double prev_num_value = Double.parseDouble(prev_num);
