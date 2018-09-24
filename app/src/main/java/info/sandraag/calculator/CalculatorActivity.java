@@ -34,7 +34,6 @@ public class CalculatorActivity extends AppCompatActivity {
         if (is_equals) {
 
             curr_num = "";
-            operator = null;
             is_equals = false;
         }
 
@@ -49,7 +48,6 @@ public class CalculatorActivity extends AppCompatActivity {
         if (is_equals) {
 
             curr_num = "";
-            operator = null;
             is_equals = false;
         }
 
@@ -72,8 +70,8 @@ public class CalculatorActivity extends AppCompatActivity {
 
         if (!curr_num.equals("")) {
 
-            if (operator != null && !is_equals) {
-                
+            if (operator != null) {
+
                 // Overwrite previous number with result
                 prev_num = Operate(operator.getId());
 
@@ -112,6 +110,8 @@ public class CalculatorActivity extends AppCompatActivity {
         }
 
         is_equals = true;
+
+        operator = null;
     }
 
     public void onClickClear(View view) {
